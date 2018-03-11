@@ -44,7 +44,6 @@ class EventsComposer
      */
     public function compose(View $view)
     {
-
         //$places = DB::table('places')->get();
 
         $all_places = DB::table('places')
@@ -64,7 +63,7 @@ class EventsComposer
         echo count($all_places_other) . ' ';
         if(count($all_places) < 1) {
 
-            $url = ''; //facebook graph place search url
+            $url = 'https://graph.facebook.com/v2.12/search?type=place&center=55.605833,13.0025&distance=100&fields=name,location&limit=150&access_token=' . $Config::get('social.facebook.access_token');
 
             $all_places = array();
             $all_places = $this->get_all_places($url, $all_places);
@@ -186,7 +185,7 @@ class EventsComposer
 
                 if(isset($value2->id)) {
                     //echo('id: ' . $value2['id'] . '<br>');
-                    $url = ''; //facebook graph events url
+                    $url = 'https://graph.facebook.com/v2.12/' . $value2->id . '/events?access_token=' . $Config::get('social.facebook.access_token') . '&fields=id,name';
                     
                     $events[$value2->id] = [
                         'browser' => new Browser($loop),
