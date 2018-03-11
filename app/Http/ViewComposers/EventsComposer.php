@@ -15,6 +15,11 @@ use React\HttpClient\Response;
 
 use Clue\React\Buzz\Browser;
 
+use Illuminate\Support\Facades\Config;
+
+use App\Place;
+use App\Event;
+
 class EventsComposer
 {
     /**
@@ -63,7 +68,7 @@ class EventsComposer
         echo count($all_places_other) . ' ';
         if(count($all_places) < 1) {
 
-            $url = 'https://graph.facebook.com/v2.12/search?type=place&center=55.605833,13.0025&distance=100&fields=name,location&limit=150&access_token=' . $Config::get('social.facebook.access_token');
+            $url = 'https://graph.facebook.com/v2.12/search?type=place&center=55.605833,13.0025&distance=100&fields=name,location&limit=150&access_token=' . Config::get('social.facebook.access_token');
 
             $all_places = array();
             $all_places = $this->get_all_places($url, $all_places);
@@ -72,6 +77,15 @@ class EventsComposer
 
             foreach ($all_places as $key => $place) {
                 if(isset($place['id'])) {
+
+                    $new_place = new Place();
+                    $new_place->place_id = $place['id'];
+                    $new_place->name = $place['name'];
+                    $new_place->latitude = $place['location']['latitude'];
+                    $new_place->longitude = $place['location']['longitude']; 
+
+                    $new_place->save();
+                    /*
                     DB::table('places')->insert([
                         'place_id' => $place['id'], 
                         'name' => $place['name'], 
@@ -79,6 +93,7 @@ class EventsComposer
                         'longitude' => $place['location']['longitude']  
                         ]
                     );
+                    */
                 }
             }
 
@@ -123,12 +138,20 @@ class EventsComposer
             foreach ($all_events as $key => $events) {
                 foreach ($events['events'] as $key => $event) {
                     try {
+                        $new_event = new Event();
+                        $new_event->event_id = $event['id'];
+                        $new_event->place_id = $events['place']->id;
+                        $new_event->name = $event['name'];
+
+                        $new_event->save();
+                    /*
                     DB::table('events')->insert([
                         'event_id' => $event['id'],
                         'place_id' => $events['place']->id, 
                         'name' => $event['name'], 
                         ]
                     );
+                    */
                     } catch(\Illuminate\Database\QueryException $e) {
 
                     }
@@ -185,7 +208,7 @@ class EventsComposer
 
                 if(isset($value2->id)) {
                     //echo('id: ' . $value2['id'] . '<br>');
-                    $url = 'https://graph.facebook.com/v2.12/' . $value2->id . '/events?access_token=' . $Config::get('social.facebook.access_token') . '&fields=id,name';
+                    $url = 'https://graph.facebook.com/v2.12/' . $value2->id . '/events?access_token=' . Config::get('social.facebook.access_token') . '&fields=id,name';
                     
                     $events[$value2->id] = [
                         'browser' => new Browser($loop),
