@@ -21,3 +21,6 @@ Homestead.json
 
 # VS Code
 .vs/
+
+# Composer
+composer.lock

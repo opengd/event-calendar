@@ -55,14 +55,14 @@
         //var cords = @json($cords);
         var places = @json($places);
         var event_places = @json($events);
-        var $events_and_places = @json($events_and_places);
+        var events_and_places = @json($events_and_places);
         
         //for(i = 0; i < places.length; i += 2) 
-        event_places.forEach(place => {
+        events_and_places.forEach(place => {
             
-            L.marker([ place['place']['latitude'], place['place']['longitude']]).addTo(map)
-                .bindPopup(place['place']['name'])
-                .openPopup();
+            //L.marker([ place['latitude'], place['longitude']]).addTo(map)
+              //  .bindPopup(place['place_name'])
+                //.openPopup();
         });
     </script>
 </body>
